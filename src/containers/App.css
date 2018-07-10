@@ -10,3 +10,8 @@ h1 {
   font-weight: 200;
   color: #0ccac4;
 }
+
+.scrollList {
+  max-height: 600px;
+  overflow: auto;
+}
