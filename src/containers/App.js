@@ -1,52 +1,54 @@
 import React, { Component } from 'react';
 import './App.css';
 import 'tachyons';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import CardList from '../components/CardList';
 import SearchBar from '../components/SearchBar';
 import ScrollList from '../components/ScrollList';
 import ErrorBoundary from '../components/ErrorBoundary';
+import * as actions from '../actions';
 
 class App extends Component {
   constructor() {
     super();
-    this.state = { robots: [], searchTerm: '' };
-    this.handleSearch = this.handleSearch.bind(this);
+    this.state = {};
   }
 
   componentDidMount() {
-    axios
-      .get('https://jsonplaceholder.typicode.com/users')
-      .then(res => {
-        this.setState({ robots: res.data });
-      })
-      .catch(err => console.log(err));
-  }
-
-  handleSearch(e) {
-    this.setState({ searchTerm: e.target.value });
+    const { fetchRobots } = this.props;
+    fetchRobots();
   }
 
   render() {
-    const { robots, searchTerm } = this.state;
-    if (!robots.length) {
-      return '...Loading';
-    }
-    const filtered = robots.filter(robot =>
-      robot.name.toUpperCase().includes(searchTerm.toUpperCase())
+    const { robots, searchTerm, setSearchField, isPending } = this.props;
+    const filteredRobots = robots.filter(robot =>
+      robot.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     return (
       <div className="tc">
-        <h1 className="f1">Robots</h1>
-        <SearchBar handleSearch={this.handleSearch} searchTerm={searchTerm} />
+        <h1 className="f1">RoboFriends</h1>
+        <SearchBar handleSearch={setSearchField} />
         <ScrollList>
-          <ErrorBoundary>
-            <CardList robots={filtered} />
-          </ErrorBoundary>
+          {isPending ? (
+            <h1>Loading</h1>
+          ) : (
+            <ErrorBoundary>
+              <CardList robots={filteredRobots} />
+            </ErrorBoundary>
+          )}
         </ScrollList>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = ({ searchTerm, robots }) => ({
+  searchTerm,
+  robots: robots.data,
+  isPending: robots.isPending,
+});
+
+export default connect(
+  mapStateToProps,
+  actions
+)(App);

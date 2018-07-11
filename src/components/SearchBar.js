@@ -10,7 +10,7 @@ class SearchBar extends Component {
           className="pa3 ba b--green bg-lightest-blue w-60"
           type="text"
           name="search"
-          value={searchTerm}
+          defaultValue={searchTerm}
           onChange={handleSearch}
         />
       </div>
@@ -19,7 +19,6 @@ class SearchBar extends Component {
 }
 
 SearchBar.propTypes = {
-  handleSearch: PropTypes.func.isRequired,
   searchTerm: PropTypes.string,
 };
 
